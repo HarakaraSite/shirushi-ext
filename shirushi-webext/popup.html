@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>shirushi</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, sans-serif;
+      width: 340px;
+      padding: 14px;
+      color: #222;
+      background: #fff;
+    }
+
+    /* ページ情報 */
+    .page-info { margin-bottom: 12px; }
+    .page-url {
+      font-size: 0.75rem;
+      color: #888;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 4px;
+    }
+    #page-title {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      color: #222;
+    }
+    #page-title:focus { outline: none; border-color: #4A90D9; }
+
+    /* 区切り */
+    .divider { border: none; border-top: 1px solid #eee; margin: 10px 0; }
+
+    /* メモ */
+    #excerpt {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      resize: none;
+      height: 56px;
+      font-family: inherit;
+    }
+    #excerpt:focus { outline: none; border-color: #4A90D9; }
+
+    /* タグ */
+    .tag-area { margin-top: 10px; }
+    #tag-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-bottom: 6px;
+      min-height: 0;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: #e3f2fd;
+      color: #1565c0;
+      border-radius: 12px;
+      padding: 2px 8px;
+      font-size: 0.8rem;
+    }
+    .chip-remove {
+      cursor: pointer;
+      font-size: 0.9rem;
+      line-height: 1;
+      color: #888;
+    }
+    .chip-remove:hover { color: #c62828; }
+
+    .tag-input-wrap { position: relative; }
+    #tag-input {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+    #tag-input:focus { outline: none; border-color: #4A90D9; }
+    #tag-suggest {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1px solid #ddd;
+      border-top: none;
+      border-radius: 0 0 6px 6px;
+      max-height: 140px;
+      overflow-y: auto;
+      z-index: 10;
+      display: none;
+    }
+    .suggest-item {
+      padding: 6px 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+    .suggest-item:hover { background: #f0f7ff; }
+
+    /* ボタン */
+    .footer { margin-top: 12px; }
+    #save-btn {
+      width: 100%;
+      padding: 9px;
+      background: #4A90D9;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    #save-btn:hover:not(:disabled) { background: #357ABD; }
+    #save-btn:disabled { opacity: 0.5; cursor: default; }
+
+    /* ステータス */
+    #status {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      text-align: center;
+      min-height: 18px;
+    }
+    #status.success { color: #2e7d32; }
+    #status.error   { color: #c62828; }
+    #status.info    { color: #1565c0; }
+
+    #open-options {
+      display: block;
+      margin-top: 6px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #4A90D9;
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-info">
+    <div class="page-url" id="page-url"></div>
+    <input id="page-title" type="text" placeholder="タイトル">
+  </div>
+
+  <hr class="divider">
+
+  <textarea id="excerpt" placeholder="メモ（任意）"></textarea>
+
+  <div class="tag-area">
+    <div id="tag-chips"></div>
+    <div class="tag-input-wrap">
+      <input id="tag-input" type="text" placeholder="タグを追加（任意）">
+      <div id="tag-suggest"></div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button id="save-btn">登録</button>
+    <div id="status"></div>
+    <button id="open-options">設定を開く</button>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

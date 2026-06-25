@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>shirushi 設定</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      max-width: 480px;
+      margin: 40px auto;
+      padding: 0 16px;
+      color: #222;
+    }
+    h1 { font-size: 1.2rem; margin-bottom: 24px; }
+    label { display: block; margin-bottom: 4px; font-size: 0.85rem; color: #555; }
+    input {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 8px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+    input:focus { outline: none; border-color: #4A90D9; }
+    .actions { display: flex; gap: 8px; margin-top: 4px; }
+    button {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+    #save-settings { background: #4A90D9; color: white; }
+    #save-settings:hover { background: #357ABD; }
+    #test-conn { background: #f0f0f0; color: #333; }
+    #test-conn:hover { background: #e0e0e0; }
+    #options-status {
+      margin-top: 16px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      display: none;
+    }
+    #options-status.success { background: #e8f5e9; color: #2e7d32; display: block; }
+    #options-status.error   { background: #fdecea; color: #c62828; display: block; }
+    #options-status.info    { background: #e3f2fd; color: #1565c0; display: block; }
+  </style>
+</head>
+<body>
+  <h1>shirushi 設定</h1>
+
+  <label for="base-url">接続先 URL</label>
+  <input id="base-url" type="url" placeholder="https://shirushi.harakara.site">
+
+  <label for="api-token">API トークン</label>
+  <input id="api-token" type="password" placeholder="openssl rand -hex 32 で生成した値">
+
+  <div class="actions">
+    <button id="save-settings">保存</button>
+    <button id="test-conn">接続テスト</button>
+  </div>
+
+  <div id="options-status"></div>
+
+  <script src="options.js"></script>
+</body>
+</html>
