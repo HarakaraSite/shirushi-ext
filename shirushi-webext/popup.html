@@ -160,30 +160,31 @@
 <body>
   <div class="page-info">
     <div class="page-url" id="page-url"></div>
-    <input id="page-title" type="text" placeholder="タイトル">
+    <input id="page-title" type="text" data-i18n-placeholder="bookmarkTitlePlaceholder" placeholder="Title">
   </div>
 
   <hr class="divider">
 
-  <textarea id="excerpt" placeholder="メモ（任意）"></textarea>
+  <textarea id="excerpt" data-i18n-placeholder="bookmarkNotePlaceholder" placeholder="Note (optional)"></textarea>
 
   <div class="tag-area">
     <div id="tag-chips"></div>
     <div class="tag-input-wrap">
-      <input id="tag-input" type="text" placeholder="タグを追加（任意）">
+      <input id="tag-input" type="text" data-i18n-placeholder="bookmarkTagPlaceholder" placeholder="Add a tag (optional)">
       <div id="tag-suggest"></div>
     </div>
   </div>
 
   <div class="footer">
-    <button id="save-btn">登録</button>
+    <button id="save-btn" data-i18n="saveButton">Save</button>
     <div id="status"></div>
     <div class="footer-links">
-      <button id="open-search">保存済みを検索</button>
-      <button id="open-options">設定を開く</button>
+      <button id="open-search" data-i18n="openSearch">Search saved</button>
+      <button id="open-options" data-i18n="openSettings">Settings</button>
     </div>
   </div>
 
+  <script src="i18n.js"></script>
   <script src="popup.js"></script>
 </body>
 </html>

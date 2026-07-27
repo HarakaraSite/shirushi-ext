@@ -7,6 +7,10 @@ const actionIcons = {
   saved: "icons/shirushi.svg",
 };
 
+function t(key, substitutions) {
+  return browser.i18n.getMessage(key, substitutions) || key;
+}
+
 // 非同期の照会がページ遷移より後に完了して、古いURLの状態でアイコンを上書きしないための世代番号です。
 const tabCheckVersions = new Map();
 
@@ -26,7 +30,7 @@ async function setTabIcon(tabId, saved) {
   });
   await browser.action.setTitle({
     tabId,
-    title: saved ? "shirushi（登録済み）" : "shirushi",
+    title: saved ? t("actionTitleSaved") : t("actionTitle"),
   });
 }
 
@@ -97,16 +101,16 @@ async function apiFetch(path, options = {}) {
 async function handleGetTags() {
   const { baseUrl, apiToken } = await getSettings();
   if (!baseUrl || !apiToken) {
-    return { ok: false, error: "未設定", needsSetup: true };
+    return { ok: false, error: t("notConfigured"), needsSetup: true };
   }
 
   const res = await apiFetch("/api/tags?all=1");
 
   if (res.status === 401) {
-    return { ok: false, status: 401, error: "トークンが不正です。設定を確認してください" };
+    return { ok: false, status: 401, error: t("invalidToken") };
   }
   if (!res.ok) {
-    return { ok: false, status: res.status, error: `接続に失敗しました（${res.status}）` };
+    return { ok: false, status: res.status, error: t("connectionFailedWithStatus", String(res.status)) };
   }
 
   const tags = await res.json();
@@ -117,7 +121,7 @@ async function handleGetTags() {
 async function handleSearchBookmarks(query) {
   const { baseUrl, apiToken } = await getSettings();
   if (!baseUrl || !apiToken) {
-    return { ok: false, error: "未設定", needsSetup: true };
+    return { ok: false, error: t("notConfigured"), needsSetup: true };
   }
 
   const q = String(query || "").trim();
@@ -127,10 +131,10 @@ async function handleSearchBookmarks(query) {
 
   const res = await apiFetch(`/api/bookmarks?q=${encodeURIComponent(q)}&page=1&limit=20`);
   if (res.status === 401) {
-    return { ok: false, status: 401, error: "トークンが不正です。設定を確認してください" };
+    return { ok: false, status: 401, error: t("invalidToken") };
   }
   if (!res.ok) {
-    return { ok: false, status: res.status, error: `検索に失敗しました（${res.status}）` };
+    return { ok: false, status: res.status, error: t("searchFailedWithStatus", String(res.status)) };
   }
 
   const result = await res.json();
@@ -149,10 +153,10 @@ async function resolveTagIds(tagNames) {
         body: JSON.stringify({ name }),
       });
       if (res.status === 401) {
-        return { ok: false, status: 401, error: "トークンが不正です。設定を確認してください" };
+        return { ok: false, status: 401, error: t("invalidToken") };
       }
       if (!res.ok) {
-        return { ok: false, status: res.status, error: `タグの作成に失敗しました（${name}）` };
+        return { ok: false, status: res.status, error: t("tagCreateFailed", name) };
       }
       const tag = await res.json();
       tagCache.set(key, tag);
@@ -165,7 +169,7 @@ async function resolveTagIds(tagNames) {
 async function handleSave({ url, title, excerpt, tags, tabId }) {
   const { baseUrl, apiToken } = await getSettings();
   if (!baseUrl || !apiToken) {
-    return { ok: false, error: "未設定", needsSetup: true };
+    return { ok: false, error: t("notConfigured"), needsSetup: true };
   }
 
   // タグID解決（1件でも失敗したら中断）
@@ -187,10 +191,10 @@ async function handleSave({ url, title, excerpt, tags, tabId }) {
   });
 
   if (res.status === 401) {
-    return { ok: false, status: 401, error: "トークンが不正です。設定を確認してください" };
+    return { ok: false, status: 401, error: t("invalidToken") };
   }
   if (res.status === 409) {
-    return { ok: false, status: 409, error: "このページは登録済みです" };
+    return { ok: false, status: 409, error: t("bookmarkAlreadySaved") };
   }
   if (res.status === 201) {
     if (Number.isInteger(tabId)) {
@@ -200,7 +204,7 @@ async function handleSave({ url, title, excerpt, tags, tabId }) {
     }
     return { ok: true, status: 201 };
   }
-  return { ok: false, status: res.status, error: `保存に失敗しました（${res.status}）` };
+  return { ok: false, status: res.status, error: t("saveFailedWithStatus", String(res.status)) };
 }
 
 async function handleMessage(message) {
@@ -214,9 +218,9 @@ async function handleMessage(message) {
     if (message.type === "save") {
       return await handleSave(message);
     }
-    return { ok: false, error: "不明なメッセージタイプ" };
+    return { ok: false, error: t("unknownMessageType") };
   } catch (e) {
-    return { ok: false, error: "接続に失敗しました" };
+    return { ok: false, error: t("connectionFailed") };
   }
 }
 

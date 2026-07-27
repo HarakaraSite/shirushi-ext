@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>保存済みを検索 - shirushi</title>
+  <title data-i18n="searchPageTitle">Search saved - Shirushi</title>
   <style>
     :root {
       color: #222;
@@ -49,12 +49,13 @@
 </head>
 <body>
   <div class="header">
-    <button id="back">← 戻る</button>
-    <h1>保存済みを検索</h1>
+    <button id="back" data-i18n="backButton">← Back</button>
+    <h1 data-i18n="searchHeading">Search saved</h1>
   </div>
-  <input id="search-input" type="search" placeholder="タイトル・URL・メモ・要約を検索" autocomplete="off">
-  <div id="search-status" aria-live="polite">検索語を入力してください</div>
+  <input id="search-input" type="search" data-i18n-placeholder="searchPlaceholder" placeholder="Search titles, URLs, notes, and summaries" autocomplete="off">
+  <div id="search-status" data-i18n="enterSearchQuery" aria-live="polite">Enter a search query</div>
   <div id="results"></div>
+  <script src="i18n.js"></script>
   <script src="search.js"></script>
 </body>
 </html>

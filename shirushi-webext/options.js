@@ -28,14 +28,14 @@ async function onSave() {
   const apiToken = normalizeToken(elApiToken.value);
 
   if (!baseUrl) {
-    showStatus("接続先 URL を入力してください", "error");
+    showStatus(t("serverURLRequired"), "error");
     return;
   }
 
   await browser.storage.local.set({ baseUrl, apiToken });
   elBaseUrl.value = baseUrl;
   elApiToken.value = apiToken;
-  showStatus("保存しました", "success");
+  showStatus(t("settingsSaved"), "success");
 }
 
 async function onTestConnection() {
@@ -43,7 +43,7 @@ async function onTestConnection() {
   const apiToken = normalizeToken(elApiToken.value);
 
   if (!baseUrl || !apiToken) {
-    showStatus("先に保存してからテストしてください", "error");
+    showStatus(t("saveBeforeTesting"), "error");
     return;
   }
 
@@ -56,20 +56,20 @@ async function onTestConnection() {
   }
 
   elTest.disabled = true;
-  showStatus("接続中...", "info");
+  showStatus(t("connecting"), "info");
 
   const res = await browser.runtime.sendMessage({ type: "getTags" });
 
   elTest.disabled = false;
 
   if (res.needsSetup) {
-    showStatus("URL またはトークンが未設定です", "error");
+    showStatus(t("serverURLOrTokenMissing"), "error");
   } else if (res.status === 401) {
-    showStatus("トークンが不正です。設定を確認してください", "error");
+    showStatus(t("invalidToken"), "error");
   } else if (res.ok) {
-    showStatus(`接続成功（タグ ${res.tags.length} 件）`, "success");
+    showStatus(t("connectionSucceeded", String(res.tags.length)), "success");
   } else {
-    showStatus(res.error || "接続に失敗しました", "error");
+    showStatus(res.error || t("connectionFailed"), "error");
   }
 }
 

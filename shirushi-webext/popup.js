@@ -132,7 +132,7 @@ async function onSave() {
   }
 
   elSaveBtn.disabled = true;
-  showStatus("登録中...", "info");
+  showStatus(t("saving"), "info");
 
   const res = await browser.runtime.sendMessage({
     type: "save",
@@ -144,13 +144,13 @@ async function onSave() {
   });
 
   if (res.ok) {
-    showStatus("保存しました", "success");
-    elSaveBtn.textContent = "✓ 保存済み";
+    showStatus(t("saved"), "success");
+    elSaveBtn.textContent = t("saveButtonSaved");
   } else if (res.needsSetup) {
-    showStatus("設定が必要です", "error");
+    showStatus(t("setupRequired"), "error");
     elSaveBtn.disabled = false;
   } else {
-    showStatus(res.error || "保存に失敗しました", "error");
+    showStatus(res.error || t("saveFailed"), "error");
     elSaveBtn.disabled = false;
   }
 }
@@ -166,14 +166,14 @@ async function init() {
 
   if (!isSavableUrl(currentUrl)) {
     elSaveBtn.disabled = true;
-    showStatus("このページは登録できません", "error");
+    showStatus(t("pageCannotBeSaved"), "error");
     return;
   }
 
   const res = await browser.runtime.sendMessage({ type: "getTags" });
 
   if (res.needsSetup) {
-    showStatus("設定が必要です", "error");
+    showStatus(t("setupRequired"), "error");
     elSaveBtn.disabled = true;
     return;
   }
@@ -181,7 +181,7 @@ async function init() {
   if (res.ok) {
     allTags = res.tags;
   } else {
-    showStatus(res.error || "タグの取得に失敗しました", "error");
+    showStatus(res.error || t("tagsFetchFailed"), "error");
     // タグ取得失敗でも登録は継続できる
   }
 }

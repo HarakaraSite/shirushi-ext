@@ -1,8 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "shirushi",
+  "name": "__MSG_extensionName__",
   "version": "0.1.0",
-  "description": "ワンクリックで shirushi にブックマークを登録する",
+  "description": "__MSG_extensionDescription__",
+  "default_locale": "en",
   "permissions": ["activeTab", "storage", "tabs"],
   "host_permissions": [
     "https://shirushi.harakara.site/*",

@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>shirushi 設定</title>
+  <title data-i18n="optionsPageTitle">Shirushi settings</title>
   <style>
     body {
       font-family: system-ui, sans-serif;
@@ -48,21 +48,22 @@
   </style>
 </head>
 <body>
-  <h1>shirushi 設定</h1>
+  <h1 data-i18n="optionsHeading">Shirushi settings</h1>
 
-  <label for="base-url">接続先 URL</label>
-  <input id="base-url" type="url" placeholder="https://shirushi.harakara.site">
+  <label for="base-url" data-i18n="serverURL">Server URL</label>
+  <input id="base-url" type="url" placeholder="https://example.com">
 
-  <label for="api-token">API トークン</label>
-  <input id="api-token" type="password" placeholder="openssl rand -hex 32 で生成した値">
+  <label for="api-token">SHIRUSHI_API_TOKEN</label>
+  <input id="api-token" type="password" data-i18n-placeholder="serverTokenPlaceholder" placeholder="The SHIRUSHI_API_TOKEN set on the server">
 
   <div class="actions">
-    <button id="save-settings">保存</button>
-    <button id="test-conn">接続テスト</button>
+    <button id="save-settings" data-i18n="saveSettings">Save</button>
+    <button id="test-conn" data-i18n="testConnection">Test connection</button>
   </div>
 
   <div id="options-status"></div>
 
+  <script src="i18n.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

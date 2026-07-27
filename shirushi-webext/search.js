@@ -38,7 +38,7 @@ function renderResults(bookmarks) {
     const card = document.createElement("button");
     card.type = "button";
     card.className = "result-card";
-    card.title = "選択して元のページを開く";
+    card.title = t("openOriginalPage");
 
     const title = document.createElement("span");
     title.className = "result-title";
@@ -77,38 +77,38 @@ async function search() {
   elResults.replaceChildren();
 
   if (!query) {
-    elSearchStatus.textContent = "検索語を入力してください";
+    elSearchStatus.textContent = t("enterSearchQuery");
     return;
   }
 
-  elSearchStatus.textContent = "検索中…";
+  elSearchStatus.textContent = t("searching");
   let result;
   try {
     result = await browser.runtime.sendMessage({ type: "searchBookmarks", query });
   } catch {
     if (version === searchVersion) {
-      elSearchStatus.textContent = "検索に失敗しました";
+      elSearchStatus.textContent = t("searchFailed");
     }
     return;
   }
   if (version !== searchVersion) return;
 
   if (result.needsSetup) {
-    elSearchStatus.textContent = "接続先 URL と API トークンを設定してください";
+    elSearchStatus.textContent = t("serverURLOrTokenMissing");
     return;
   }
   if (!result.ok) {
-    elSearchStatus.textContent = result.error || "検索に失敗しました";
+    elSearchStatus.textContent = result.error || t("searchFailed");
     return;
   }
   if (result.total === 0) {
-    elSearchStatus.textContent = "一致する保存済みブックマークはありません";
+    elSearchStatus.textContent = t("noSearchResults");
     return;
   }
 
   elSearchStatus.textContent = result.total > result.bookmarks.length
-    ? `${result.total} 件中、先頭 ${result.bookmarks.length} 件を表示しています`
-    : `${result.total} 件見つかりました`;
+    ? t("searchResultsLimited", [String(result.total), String(result.bookmarks.length)])
+    : t("searchResultsFound", String(result.total));
   renderResults(result.bookmarks);
 }
 
