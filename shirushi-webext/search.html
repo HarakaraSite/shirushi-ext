@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>保存済みを検索 - shirushi</title>
+  <style>
+    :root {
+      color: #222;
+      background: #fafafa;
+      font-family: system-ui, sans-serif;
+    }
+    body { width: 340px; margin: 0; padding: 14px; }
+    .header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+    h1 { flex: 1; font-size: 1.05rem; margin: 0; }
+    #back {
+      padding: 3px 0; border: none; background: none; color: #4A90D9;
+      cursor: pointer; font: inherit; font-size: .85rem;
+    }
+    #search-input {
+      width: 100%; box-sizing: border-box; padding: 11px 13px;
+      border: 1px solid #b9c6d0; border-radius: 8px; font: inherit;
+    }
+    #search-input:focus { outline: 2px solid #4A90D9; outline-offset: 1px; }
+    #search-status { min-height: 1.4em; margin: 12px 2px; color: #666; font-size: .9rem; }
+    #results { display: grid; gap: 8px; max-height: 430px; padding: 2px 3px 2px 0; overflow-y: auto; }
+    .result-card {
+      width: 100%; padding: 14px; border: 1px solid #d9e0e5; border-radius: 9px;
+      color: inherit; background: #fff; text-align: left; font: inherit; cursor: pointer;
+    }
+    .result-card:hover { border-color: #7eb5e5; background: #f8fcff; }
+    .result-card:focus-visible { outline: 2px solid #4A90D9; outline-offset: 2px; }
+    .result-title {
+      display: -webkit-box; min-height: 2.8em; overflow: hidden;
+      -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+      font-weight: 650; line-height: 1.4;
+    }
+    .result-meta { display: flex; gap: 8px; align-items: center; margin-top: 5px; color: #68757e; font-size: .8rem; }
+    .result-domain { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .tag-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+    .tag { padding: 1px 6px; border-radius: 9px; background: #e3f2fd; color: #1565c0; font-size: .75rem; }
+    .excerpt {
+      display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 1;
+      overflow: hidden; margin: 9px 0 0; color: #4f5b63; font-size: .88rem; line-height: 1.55;
+    }
+    .result-card:hover .excerpt, .result-card:focus-visible .excerpt { -webkit-line-clamp: 6; }
+    .empty { padding: 28px 0; color: #68757e; text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <button id="back">← 戻る</button>
+    <h1>保存済みを検索</h1>
+  </div>
+  <input id="search-input" type="search" placeholder="タイトル・URL・メモ・要約を検索" autocomplete="off">
+  <div id="search-status" aria-live="polite">検索語を入力してください</div>
+  <div id="results"></div>
+  <script src="search.js"></script>
+</body>
+</html>

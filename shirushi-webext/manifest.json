@@ -3,7 +3,7 @@
   "name": "shirushi",
   "version": "0.1.0",
   "description": "ワンクリックで shirushi にブックマークを登録する",
-  "permissions": ["activeTab", "storage"],
+  "permissions": ["activeTab", "storage", "tabs"],
   "host_permissions": [
     "https://shirushi.harakara.site/*",
     "http://localhost:8181/*"
@@ -14,9 +14,9 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icons/icon-16.png",
-      "48": "icons/icon-48.png",
-      "96": "icons/icon-96.png"
+      "16": "icons/shirushi-muted.svg",
+      "48": "icons/shirushi-muted.svg",
+      "96": "icons/shirushi-muted.svg"
     }
   },
   "options_ui": {
@@ -24,9 +24,9 @@
     "open_in_tab": true
   },
   "icons": {
-    "16": "icons/icon-16.png",
-    "48": "icons/icon-48.png",
-    "96": "icons/icon-96.png"
+    "16": "icons/shirushi.svg",
+    "48": "icons/shirushi.svg",
+    "96": "icons/shirushi.svg"
   },
   "browser_specific_settings": {
     "gecko": {

@@ -7,8 +7,10 @@ const elTagChips = document.getElementById("tag-chips");
 const elSaveBtn = document.getElementById("save-btn");
 const elStatus = document.getElementById("status");
 const elOpenOptions = document.getElementById("open-options");
+const elOpenSearch = document.getElementById("open-search");
 
 let currentUrl = "";
+let currentTabId;
 let allTags = [];
 let selectedTags = [];
 
@@ -116,6 +118,9 @@ elTagChips.addEventListener("click", (e) => {
 
 elSaveBtn.addEventListener("click", onSave);
 elOpenOptions.addEventListener("click", () => browser.runtime.openOptionsPage());
+elOpenSearch.addEventListener("click", () => {
+  window.location.assign(browser.runtime.getURL("search.html"));
+});
 
 async function onSave() {
   // 入力途中のタグを確定
@@ -135,6 +140,7 @@ async function onSave() {
     title: elTitle.value.trim(),
     excerpt: elExcerpt.value.trim(),
     tags: [...selectedTags],
+    tabId: currentTabId,
   });
 
   if (res.ok) {
@@ -151,6 +157,7 @@ async function onSave() {
 
 async function init() {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+  currentTabId = tab?.id;
   currentUrl = tab?.url || "";
   const title = tab?.title || "";
 

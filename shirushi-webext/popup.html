@@ -133,9 +133,21 @@
     #status.info    { color: #1565c0; }
 
     #open-options {
-      display: block;
-      margin-top: 6px;
       text-align: center;
+      font-size: 0.8rem;
+      color: #4A90D9;
+      cursor: pointer;
+      text-decoration: underline;
+      background: none;
+      border: none;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 6px;
+    }
+    #open-search {
       font-size: 0.8rem;
       color: #4A90D9;
       cursor: pointer;
@@ -166,7 +178,10 @@
   <div class="footer">
     <button id="save-btn">登録</button>
     <div id="status"></div>
-    <button id="open-options">設定を開く</button>
+    <div class="footer-links">
+      <button id="open-search">保存済みを検索</button>
+      <button id="open-options">設定を開く</button>
+    </div>
   </div>
 
   <script src="popup.js"></script>
