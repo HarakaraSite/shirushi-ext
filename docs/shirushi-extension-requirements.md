@@ -3,7 +3,7 @@
 shirushi にワンクリックでブックマークを登録する Firefox 拡張（Manifest V3 / WebExtensions）。
 
 - 新規リポジトリ想定: `shirushi-webext`（将来 Chrome/Edge 対応も視野に入れた命名）
-- 接続先: 本番 `https://shirushi.harakara.site`、開発 `http://localhost:8181`
+- 公開版の接続先: 利用者が設定する任意の HTTPS Shirushi サーバー（HTTP は一時登録専用の開発版のみ）
 - 前提: シングルユーザー、本体に Bearer トークン認証が入っていること（別紙 backend 要件 v1）
 
 ---
@@ -12,7 +12,7 @@ shirushi にワンクリックでブックマークを登録する Firefox 拡�
 
 **popup からは fetch しない。ネットワークアクセスは全て background(event page) に集約する。**
 
-Firefox MV3 では、popup や content script からのクロスオリジン fetch は `host_permissions` を宣言しても CORS で弾かれる。一方 **background 経由の fetch は `host_permissions` 宣言でバイパスできる**。そのため:
+Firefox MV3 では、popup や content script からのクロスオリジン fetch はホスト権限を宣言しても CORS で弾かれる。一方 **background 経由の fetch はユーザーが許可したホスト権限で CORS をバイパスできる**。そのため:
 
 - popup: `tabs` API での url/title 取得、ユーザー入力、結果表示のみ（fetch しない）
 - background: タグ一覧取得・タグ ID 解決・ブックマーク登録の全 fetch を担当
@@ -42,27 +42,35 @@ shirushi-webext/
 ```json
 {
   "manifest_version": 3,
-  "name": "shirushi",
+  "name": "__MSG_extensionName__",
   "version": "0.1.0",
   "permissions": ["activeTab", "storage"],
-  "host_permissions": [
-    "https://shirushi.harakara.site/*",
-    "http://localhost:8181/*"
+  "optional_host_permissions": [
+    "https://*/*"
   ],
   "background": { "scripts": ["background.js"] },
   "action": { "default_popup": "popup.html" },
   "options_ui": { "page": "options.html", "open_in_tab": true },
-  "browser_specific_settings": { "gecko": { "id": "shirushi@harakara.site" } }
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "shirushi@harakara.site",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": ["authenticationInfo", "browsingActivity", "websiteContent"]
+      }
+    }
+  }
 }
 ```
 
 - `activeTab`: アイコンクリック時だけ現タブの url/title にアクセス（最小権限、AMO 審査も通りやすい）
 - `storage`: 設定の保存
-- `host_permissions`: background fetch の CORS バイパス用。本番と開発の両方を宣言（options の baseURL 切り替えで使い分け）
+- `optional_host_permissions`: background fetch の CORS バイパス用。公開版では HTTPS のみを対象に、設定保存または接続テストのユーザー操作から、入力されたサーバーのホスト権限だけを要求する
 - `background.scripts`: MV3 の非永続 background。**メッセージリスナーは必ずトップレベルで登録**（service worker/event page が寝ている間の取りこぼし防止）
 - `browser_specific_settings.gecko.id`: 署名・AMO 公開に必要
+- `browser_specific_settings.gecko.data_collection_permissions`: AMO の組み込み同意画面に、認証情報・閲覧活動・ウェブサイト内容の送信を申告する
 
-> **本番ビルドでは `http://localhost:8181/*` を `host_permissions` から除外すること**。`web-ext` のビルドターゲットや環境変数で切り替える。AMO 審査での権限過剰を避けるため。
+> Firefox の match pattern はポート番号で権限を分割できない。たとえば `http://localhost:8181` を選んだ場合、許可対象は `http://localhost/*` となる。この許可で他のホストへアクセスすることはない。
 
 ---
 
@@ -229,7 +237,7 @@ async function apiFetch(path, options = {}) {
 | 401 | 「トークンが不正です。設定を確認してください」 |
 | その他 | 「保存に失敗しました」（ステータス/メッセージを添える） |
 
-- 起動時の登録済み事前チェックは v1 では**やらない**（二重登録は 409 で確実に防げる。事前チェックは URL 正規化が必要で、v2 のアイコンバッジとまとめて対応）
+- 起動時の登録済み事前チェックは行わない（二重登録は 409 で確実に防げる）。
 
 ---
 
@@ -261,7 +269,7 @@ body: `{ "url", "title", "excerpt", "author", "image_url", "tags":[{"id":N}] }`
 4. メモ・タグ（サジェスト付き）を入れて登録ボタン → shirushi に登録される
 5. 既存タグは API を増やさず ID 解決、新規タグのみ `POST /api/tags`（失敗時は中断）
 6. 201/409/401/その他 が popup に適切に表示される
-7. 本番（harakara.site）・開発（localhost）の両方に向けられる
+7. 利用者が選んだ任意の HTTPS Shirushi サーバーへ、明示的な権限許可後に接続できる
 
 ---
 
@@ -271,24 +279,15 @@ body: `{ "url", "title", "excerpt", "author", "image_url", "tags":[{"id":N}] }`
 
 本体に `POST /api/bookmarks` のタグ名対応が入ったら、background の「タグ ID 解決」ロジックを削除し、タグ名をそのまま渡す形に簡素化する。
 
-### 2. アイコンバッジ（登録済み表示）
-
-shiori の拡張のように、開いているページが登録済みならツールバーアイコンの見た目を変えて一目で分かるようにする。
-
-- 監視: `tabs.onUpdated` と `tabs.onActivated`（**リスナーはトップレベル登録**。MV3 event page で取りこぼさないため）
-- 判定: 本体の `GET /api/bookmarks/exists?url=`（v2 で追加するエンドポイント）で登録有無を取得
-- 表示: 登録済みなら `action.setBadgeText({text:"✓"})` + `action.setBadgeBackgroundColor()`、未登録ならバッジを消す（または `action.setIcon()` でアイコン差し替え）
-- 注意: 全タブで頻繁に走るため、URL 正規化のブレで誤判定すると逆にストレスになる。本体の exists エンドポイントが正規化を担保する前提
-
-### 3. Chrome/Edge 対応
+### 2. Chrome/Edge 対応
 
 WebExtensions API ベースなので、manifest の差分（Chrome は background を `service_worker` 指定）程度で展開可能。`web-ext` のビルドターゲット切り替えで対応する。
 
-### 4. OGP メタデータの活用
+### 3. OGP メタデータの活用
 
 `POST /api/fetch-metadata` を使い、タブの title よりクオリティの高い og:title・og:description を自動取得してフォームに反映する。
 
-### 5. 限定スコープトークン（backend 要望）
+### 4. 限定スコープトークン（backend 要望）
 
 現在のトークンは全 API（削除・インポート含む）に対して有効。拡張が使うのは読み取り＋作成のみなので、本体側で権限を限定したトークンを発行できると理想的。
 
@@ -301,5 +300,3 @@ WebExtensions API ベースなので、manifest の差分（Chrome は backgroun
 - MV3 移行ガイド（background 経由 fetch の項）: https://extensionworkshop.com/documentation/develop/manifest-v3-migration-guide/
 - web-ext（ビルド/署名 CLI）: https://extensionworkshop.com/documentation/develop/getting-started-with-web-ext/
 - storage.local: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/storage/local
-- action.setBadgeText: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/action/setBadgeText
-- tabs.onUpdated: https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/tabs/onUpdated

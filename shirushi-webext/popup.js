@@ -140,7 +140,6 @@ async function onSave() {
     title: elTitle.value.trim(),
     excerpt: elExcerpt.value.trim(),
     tags: [...selectedTags],
-    tabId: currentTabId,
   });
 
   if (res.ok) {

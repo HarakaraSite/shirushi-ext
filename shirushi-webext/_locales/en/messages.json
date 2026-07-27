@@ -1,8 +1,7 @@
 {
   "extensionName": { "message": "Shirushi" },
+  "extensionNameDev": { "message": "Shirushi (development)" },
   "extensionDescription": { "message": "Save the current page to your Shirushi bookmarks" },
-  "actionTitle": { "message": "Shirushi" },
-  "actionTitleSaved": { "message": "Shirushi (saved)" },
   "bookmarkTitlePlaceholder": { "message": "Title" },
   "bookmarkNotePlaceholder": { "message": "Note (optional)" },
   "bookmarkTagPlaceholder": { "message": "Add a tag (optional)" },
@@ -21,6 +20,8 @@
   "optionsHeading": { "message": "Shirushi settings" },
   "serverURL": { "message": "Server URL" },
   "serverTokenPlaceholder": { "message": "The SHIRUSHI_API_TOKEN set on the server" },
+  "serverURLInvalid": { "message": "Enter a valid HTTPS server URL" },
+  "serverPermissionDenied": { "message": "Server access was not allowed" },
   "saveSettings": { "message": "Save" },
   "testConnection": { "message": "Test connection" },
   "serverURLRequired": { "message": "Enter a server URL" },

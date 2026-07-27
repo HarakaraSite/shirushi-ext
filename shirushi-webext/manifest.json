@@ -4,10 +4,9 @@
   "version": "0.1.0",
   "description": "__MSG_extensionDescription__",
   "default_locale": "en",
-  "permissions": ["activeTab", "storage", "tabs"],
-  "host_permissions": [
-    "https://shirushi.harakara.site/*",
-    "http://localhost:8181/*"
+  "permissions": ["activeTab", "storage"],
+  "optional_host_permissions": [
+    "https://*/*"
   ],
   "background": {
     "scripts": ["background.js"]
@@ -15,9 +14,9 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "icons/shirushi-muted.svg",
-      "48": "icons/shirushi-muted.svg",
-      "96": "icons/shirushi-muted.svg"
+      "16": "icons/shirushi.svg",
+      "48": "icons/shirushi.svg",
+      "96": "icons/shirushi.svg"
     }
   },
   "options_ui": {
@@ -32,7 +31,14 @@
   "browser_specific_settings": {
     "gecko": {
       "id": "shirushi@harakara.site",
-      "strict_min_version": "109.0"
+      "strict_min_version": "140.0",
+      "data_collection_permissions": {
+        "required": [
+          "authenticationInfo",
+          "browsingActivity",
+          "websiteContent"
+        ]
+      }
     }
   }
 }

@@ -31,8 +31,8 @@ shirushi-webext/
 
 ### manifest.json
 
-要件書のJSONをそのまま採用。`action.default_icon` と `icons` も追加。
-本番ビルドでは `http://localhost:8181/*` を `host_permissions` から除外する（後述）。
+要件書の JSON を採用。`action.default_icon` と `icons` も追加する。
+任意サーバーへの通信は `optional_host_permissions` を宣言し、設定保存または接続テストのユーザー操作から実行時に許可を求める。
 
 ### background.js（ネットワークの単一窓口）
 
@@ -242,10 +242,11 @@ async function onSave() {
 apiToken.trim().replace(/^bearer\s+/i, "").trim()
 ```
 
-**baseUrl 正規化**
+**baseUrl 正規化と権限要求**
 
 ```js
-baseUrl.trim().replace(/\/+$/, "")
+// HTTP/HTTPS URL だけを受け付け、末尾スラッシュ・query・fragment を除く
+// permission request には `${protocol}//${hostname}/*` を使う
 ```
 
 **接続テスト**
@@ -255,13 +256,8 @@ baseUrl.trim().replace(/\/+$/, "")
 
 ### manifest.json / ビルド
 
-本番ビルドでは `host_permissions` から `http://localhost:8181/*` を除外。
-バンドラ不使用なので `manifest.prod.json` を用意してビルド時にコピーする運用が単純:
-
-```bash
-cp manifest.prod.json manifest.json
-web-ext build
-```
+公開版は Firefox 140 以降を対象に、`optional_host_permissions` で `https://*/*` を宣言する。実際の権限要求は、利用者が入力した HTTPS サーバーのホストだけに限定する。AMO 提出用には、認証情報・閲覧活動・ウェブサイト内容の送信を manifest の `data_collection_permissions` で申告する。
+ローカル HTTP 開発は `manifest.dev.json` と `server-protocols.dev.js` を使う開発版に分離する。`scripts/package-extension.sh public` は AMO 用の HTTPS 専用 XPI を、`scripts/package-extension.sh dev` は一時登録用の HTTP/HTTPS XPI を作成する。
 
 ---
 

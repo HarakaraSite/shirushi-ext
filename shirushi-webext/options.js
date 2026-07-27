@@ -10,7 +10,21 @@ function showStatus(msg, type) {
 }
 
 function normalizeBaseUrl(val) {
-  return val.trim().replace(/\/+$/, "");
+  const value = val.trim();
+  if (!value) return "";
+
+  try {
+    const url = new URL(value);
+    if (!allowedServerProtocols.has(url.protocol) || url.username || url.password) {
+      return null;
+    }
+    url.search = "";
+    url.hash = "";
+    url.pathname = url.pathname.replace(/\/+$/, "");
+    return `${url.origin}${url.pathname}`;
+  } catch {
+    return null;
+  }
 }
 
 function normalizeToken(val) {
@@ -23,18 +37,36 @@ async function load() {
   elApiToken.value = apiToken || "";
 }
 
-async function onSave() {
-  const baseUrl = normalizeBaseUrl(elBaseUrl.value);
-  const apiToken = normalizeToken(elApiToken.value);
+function permissionPatternFor(baseUrl) {
+  const url = new URL(baseUrl);
+  // Firefox の match pattern はポートを指定できないため、同じホスト・スキームを許可します。
+  return `${url.protocol}//${url.hostname}/*`;
+}
 
-  if (!baseUrl) {
-    showStatus(t("serverURLRequired"), "error");
-    return;
+async function saveSettings(baseUrl, apiToken) {
+  const granted = await browser.permissions.request({
+    origins: [permissionPatternFor(baseUrl)],
+  });
+  if (!granted) {
+    showStatus(t("serverPermissionDenied"), "error");
+    return false;
   }
 
   await browser.storage.local.set({ baseUrl, apiToken });
   elBaseUrl.value = baseUrl;
   elApiToken.value = apiToken;
+  return true;
+}
+
+async function onSave() {
+  const baseUrl = normalizeBaseUrl(elBaseUrl.value);
+  const apiToken = normalizeToken(elApiToken.value);
+  if (!baseUrl) {
+    showStatus(t(baseUrl === null ? "serverURLInvalid" : "serverURLRequired"), "error");
+    return;
+  }
+
+  if (!await saveSettings(baseUrl, apiToken)) return;
   showStatus(t("settingsSaved"), "success");
 }
 
@@ -43,17 +75,12 @@ async function onTestConnection() {
   const apiToken = normalizeToken(elApiToken.value);
 
   if (!baseUrl || !apiToken) {
-    showStatus(t("saveBeforeTesting"), "error");
+    showStatus(t(baseUrl === null ? "serverURLInvalid" : "saveBeforeTesting"), "error");
     return;
   }
 
-  // 未保存の値があれば先に保存する
-  const { baseUrl: savedUrl, apiToken: savedToken } = await browser.storage.local.get(["baseUrl", "apiToken"]);
-  if (baseUrl !== savedUrl || apiToken !== savedToken) {
-    await browser.storage.local.set({ baseUrl, apiToken });
-    elBaseUrl.value = baseUrl;
-    elApiToken.value = apiToken;
-  }
+  // 接続テストも任意サーバーへの通信なので、ここでユーザーに権限を求めてから保存します。
+  if (!await saveSettings(baseUrl, apiToken)) return;
 
   elTest.disabled = true;
   showStatus(t("connecting"), "info");

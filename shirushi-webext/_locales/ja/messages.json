@@ -1,8 +1,7 @@
 {
   "extensionName": { "message": "shirushi" },
+  "extensionNameDev": { "message": "shirushi（開発版）" },
   "extensionDescription": { "message": "現在のページを shirushi にブックマークとして登録します" },
-  "actionTitle": { "message": "shirushi" },
-  "actionTitleSaved": { "message": "shirushi（登録済み）" },
   "bookmarkTitlePlaceholder": { "message": "タイトル" },
   "bookmarkNotePlaceholder": { "message": "メモ・要約（任意）" },
   "bookmarkTagPlaceholder": { "message": "タグを追加（任意）" },
@@ -21,6 +20,8 @@
   "optionsHeading": { "message": "shirushi 設定" },
   "serverURL": { "message": "接続先 URL" },
   "serverTokenPlaceholder": { "message": "サーバーで設定した「SHIRUSHI_API_TOKEN」" },
+  "serverURLInvalid": { "message": "HTTPS の有効な接続先 URL を入力してください" },
+  "serverPermissionDenied": { "message": "サーバーへのアクセスが許可されませんでした" },
   "saveSettings": { "message": "保存" },
   "testConnection": { "message": "接続テスト" },
   "serverURLRequired": { "message": "接続先 URL を入力してください" },
